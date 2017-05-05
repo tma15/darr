@@ -12,9 +12,8 @@
 void printvec(const std::vector<int>& v) {
     printf("[");
     for (int i=0; i < v.size()-1; ++i) {
-        printf("%d, ", v[i]);
+        std::cout << i << ":" << v[i] << ",";
     }
-    printf("%d]\n", v[v.size()-1]);
 };
 
 void printvec_char(const std::vector<char>& v) {
@@ -25,20 +24,7 @@ void printvec_char(const std::vector<char>& v) {
     printf("%c]\n", v[v.size()-1]);
 };
 
-std::string intersect(std::string x, std::string y) {
-    std::string ret;
-    for (int i=0; i < x.size(); ++i) {
-        for (int j=0; j < y.size(); ++j) {
-            if (x[i] == y[j]) {
-                ret += x[i];
-                break;
-            }
-        }
-    }
-    return ret;
-};
-
-std::string _or(std::string x, std::string y) {
+std::string darr::_or(std::string x, std::string y) {
     std::string ret = y;
     for (int i=0; i < x.size(); ++i) {
         bool in = false;
@@ -55,29 +41,31 @@ std::string _or(std::string x, std::string y) {
     return ret;
 };
 
-void DoubleArray::build(std::string filename) {
-    std::ifstream ifs(filename.c_str());
+//void DoubleArray::build(std::string filename) {
+//    std::ifstream ifs(filename.c_str());
 
-    if (ifs.fail()) {
-        std::cerr << "failed to open:" << filename << std::endl;
-    }
+//    if (ifs.fail()) {
+//        std::cerr << "failed to open:" << filename << std::endl;
+//    }
 
-    std::string line;
+//    std::string line;
 
-    std::vector<std::string> keys;
+//    std::vector<std::string> keys;
 
-    while (getline(ifs, line)) {
-        keys.push_back(line);
+//    while (getline(ifs, line)) {
+//        keys.push_back(line);
 
-        insert(line);
+//        insert(line);
 
-        bool ok = has(line);
-        std::cout << line << " has:" << ok << std::endl;
-    }
-    
-};
+//        bool ok = has(line);
+//        std::cout << line << " has:" << ok << std::endl;
+//    }
+//    
+//};
 
-bool DoubleArray::has(std::string key) {
+//bool DoubleArray::has(std::string key) {
+template<typename val_t>
+int darr::DoubleArray<val_t>::has(std::string key) {
     key += "#";
     const char* s = key.c_str();
     int n_char = strlen(s);
@@ -94,9 +82,11 @@ bool DoubleArray::has(std::string key) {
         int a = key[h];
 //        int a = keymap[key[h]];
         t = base[r] + a; // 遷移先
+        printf("t=%d\n", t);
         
         if (check[t] != r) {
-            return false;
+            return -1;
+//            return false;
         } else {
             r = t;
         }
@@ -105,23 +95,30 @@ bool DoubleArray::has(std::string key) {
     }
 
     if (h == n_char+1) {
-        printf("found: t=%d\n", t);
-        return true;
+        printf("found1: t=%d\n", t);
+        std::cout << "value=" << value[t] << std::endl;
+        return t;
+//        return true;
     } else {
         std::string s_temp = fetch_str(-base[r]);
 
         std::string a_h1 = key.substr(h, key.size());
         if (str_cmp(a_h1, s_temp)==-1) {
-            printf("found: t=%d\n", t);
-            return true;
+            printf("found2: t=%d\n", t);
+            std::cout << "value=" << value[t] << std::endl;
+            return t;
+//            return true;
         } else {
-            return false;
+            return -1;
+//            return false;
         }
     }
 };
 
 
-bool DoubleArray::insert(std::string key) {
+template<typename val_t>
+bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
+//bool darr::DoubleArray<val_t>::insert(std::string key, float val) {
     key += "#";
     const char* s = key.c_str();
     int n_char = strlen(s);
@@ -129,7 +126,7 @@ bool DoubleArray::insert(std::string key) {
     int r = 0; // current node id
     int h = 0; // current position of the given string
 
-    printf("INSERT %s\n", key.c_str());
+    printf("INSERT %s %f\n", key.c_str(), val);
 
 //    const char* tmp2 = key.c_str();
 //    setlocale( LC_CTYPE, "jpn" );
@@ -140,6 +137,7 @@ bool DoubleArray::insert(std::string key) {
 //        printf("%d\n", size);
 //        tmp2 += size;
 //    };
+    printf("basesize:%d\n", base.size());
 
     while (1) {
         int a = key[h];
@@ -147,9 +145,11 @@ bool DoubleArray::insert(std::string key) {
         int t = base[r] + a; // 遷移先
 
         if (t > check.size()) {
-            for (int k=check.size()-1; k < t; ++k) {
+            int checksize = check.size();
+            for (int k=checksize-1; k < t; ++k) {
                 base.push_back(0);
                 check.push_back(-1);
+                value.push_back(0);
             }
         }
 
@@ -158,12 +158,12 @@ bool DoubleArray::insert(std::string key) {
 
         if (check[t] != r) {
             std::string sub_key = key.substr(h, key.size());
-            a_insert(r, sub_key);
+            a_insert(r, sub_key, val);
 
-            printf("after insert %s\n", key.c_str());
-            printvec(base);
-            printvec(check);
-            printvec_char(tail);
+            printf("after insert %s t=%d\n", key.c_str(), t);
+//            darr::printvec(base);
+//            darr::printvec(check);
+//            darr::printvec_char(tail);
 
             printf("POS=%d\n", POS);
             return false;
@@ -198,12 +198,12 @@ bool DoubleArray::insert(std::string key) {
             std::string remain_key = key.substr(h+prefix_len+1, key.size());
             std::string remain_s_temp = s_temp.substr(prefix_len, s_temp.size());
 
-            b_insert(r, prefix, remain_key, remain_s_temp);
+            b_insert(r, prefix, remain_key, remain_s_temp, val);
 
-            printf("after insert %s\n", key.c_str());
-            printvec(base);
-            printvec(check);
-            printvec_char(tail);
+            printf("after insert %s t=%d\n", key.c_str(), h);
+//            darr::printvec(base);
+//            darr::printvec(check);
+//            darr::printvec_char(tail);
 
             return false;
         }
@@ -211,7 +211,9 @@ bool DoubleArray::insert(std::string key) {
 
 };
 
-void DoubleArray::a_insert(int r, std::string key) {
+template<typename val_t>
+void darr::DoubleArray<val_t>::a_insert(int r, std::string key, val_t val) {
+//void darr::DoubleArray<val_t>::a_insert(int r, std::string key, float val) {
     printf("A_INSERT(%d %s)\n", r, key.c_str());
 
     int a = key[0];
@@ -223,7 +225,7 @@ void DoubleArray::a_insert(int r, std::string key) {
 
     if (check[t] == -1) {
         printf("A_INSERT INS_STR(%d, %s, %d)\n", r, key.c_str(), POS);
-        insert_str(r, key, POS);
+        insert_str(r, key, POS, val);
     } else {
         std::string rlist = set_list(r);
         std::string tlist = set_list(check[t]);
@@ -244,32 +246,55 @@ void DoubleArray::a_insert(int r, std::string key) {
         }
 
         printf("A_INSERT INS_STR(%d, %s, %d)\n", s, key.c_str(), POS);
-        insert_str(s, key, POS);
+        insert_str(s, key, POS, val);
 
-        printvec(base);
-        printvec(check);
+//        darr::printvec(base);
+//        darr::printvec(check);
 //        exit(1);
     }
 
 };
 
-void DoubleArray::insert_str(int h, std::string key, int d_pos) {
+template<typename val_t>
+void darr::DoubleArray<val_t>::insert_str(int h, std::string key, int d_pos, val_t val) {
+//void darr::DoubleArray<val_t>::insert_str(int h, std::string key, int d_pos, float val) {
     int e1 = key[0];
 //    int e1 = keymap[key[0]];
     int t = base[h] + e1;
 
-    if (t >= check.size()) {
-        for (int k=check.size(); k <= t; ++k) {
+    int basesize = base.size();
+    if (t >= basesize) {
+        for (int k=basesize; k <= t; ++k) {
             base.push_back(0);
+        }
+    }
+    int checksize = check.size();
+    if (t >= checksize) {
+        for (int k=checksize; k <= t; ++k) {
             check.push_back(-1);
         }
     }
+    int valuesize = value.size();
+    if (t >= valuesize) {
+        for (int k=valuesize; k <= t; ++k) {
+//            value.push_back(0);
+            value.push_back(int{});
+        }
+    }
 
-    printf("insert! base:%d check:%d\n", base.size(), check.size());
+    printf("insert! %s t=%d val=%f\n", key.c_str(), t, val);
     printf("t = base[h=%d] + %c = %d + %d = %d\n", h, key[0], base[h], e1, t);
 
     base[t] = -d_pos;
     check[t] = h;
+//    printf("base size:%d t=%d\n", base.size(), t);
+//    printf("check size:%d t=%d\n", check.size(), t);
+//    printf("value size:%d t=%d\n", value.size(), t);
+//    darr::printvec(value);
+//    printf("val[t=%d] before:%f\n", t, value[t]);
+    value[t] = val;
+//    printf("val[t=%d] after:%f\n", t, val);
+//    darr::printvec(value);
 
     printf("INSERT base[t=%d]=%d\n", t, base[t]);
     printf("INSERT check[t=%d]=%d\n", t, check[t]);
@@ -280,6 +305,9 @@ void DoubleArray::insert_str(int h, std::string key, int d_pos) {
 
     check[0] = check.size();
 
+    printf("key=%s\n", key.c_str());
+    std::string a = key.substr(1, key.size());
+//    std::string e = a + '$';
     std::string e = key.substr(1, key.size()) + '$';
     const char* tmp = key.c_str();
 
@@ -305,7 +333,8 @@ void DoubleArray::insert_str(int h, std::string key, int d_pos) {
 
 };
 
-int DoubleArray::str_tail(int p, std::string y) {
+template<typename val_t>
+int darr::DoubleArray<val_t>::str_tail(int p, std::string y) {
     const char* str = y.c_str();
     int s_y = strlen(str);
 
@@ -327,7 +356,8 @@ int DoubleArray::str_tail(int p, std::string y) {
     }
 };
 
-std::string DoubleArray::fetch_str(int p) {
+template<typename val_t>
+std::string darr::DoubleArray<val_t>::fetch_str(int p) {
     std::string y;
     for (int i=p-1; i < tail.size(); ++i) {
         y += tail[i];
@@ -338,7 +368,8 @@ std::string DoubleArray::fetch_str(int p) {
     return y;
 };
 
-int DoubleArray::str_cmp(std::string x, std::string y) {
+template<typename val_t>
+int darr::DoubleArray<val_t>::str_cmp(std::string x, std::string y) {
     int len = x.size();
     if (x.size() > y.size()) {
         len = y.size();
@@ -360,7 +391,9 @@ int DoubleArray::str_cmp(std::string x, std::string y) {
     }
 };
 
-void DoubleArray::b_insert(int r, std::string prefix, std::string a, std::string b) {
+template<typename val_t>
+//void darr::DoubleArray<val_t>::b_insert(int r, std::string prefix, std::string a, std::string b, float val) {
+void darr::DoubleArray<val_t>::b_insert(int r, std::string prefix, std::string a, std::string b, val_t val) {
 
     printf("B_INSERT(%d, %s, %s, %s)\n", r, prefix.c_str(), a.c_str(), b.c_str());
 
@@ -382,27 +415,43 @@ void DoubleArray::b_insert(int r, std::string prefix, std::string a, std::string
     int q = x_check(list);
     base[r] = q;
 
-    printf("B_INSERT INS_STR(%d, %s, %d)\n", r, b.c_str(), old_pos);
-    insert_str(r, b, old_pos);
+//    float v = value[r];
+//    fprintf(stderr, "r=%d\n", r);
+//    fprintf(stderr, "size=%d\n", value.size());
+//    fprintf(stderr, "value[i=0]=%d\n", value[0]);
+//    fprintf(stderr, "value[i=1]=%d\n", value[1]);
+//    value[r] = 1;
+//    for (int i=0; i < value.size(); ++i) {
+//        value[i] = 1;
+//        fprintf(stderr, "value[i=%d]=%d\n", i, value[i]);
+//        fprintf(stdout, "value[i=%d]=%d\n", i, value[i]);
+//    }
+//    darr::printvec(value);
+    printf("r=%d value[r=%d]=%d\n", r, r, value[r]);
+    printf("B_INSERT1 INS_STR(%d, %s, %d)\n", r, b.c_str(), old_pos);
+//    insert_str(r, b, old_pos, val);
+    insert_str(r, b, old_pos, value[r]);
+    printf("r=%d value[r=%d]=%d\n", r, r, value[r]);
 
-    printvec(base);
-    printvec(check);
-    printvec_char(tail);
+//    darr::printvec(base);
+//    darr::printvec(check);
+//    printvec_char(tail);
 
-    printf("B_INSERT INS_STR(%d, %s, %d)\n", r, a.c_str(), POS);
-    insert_str(r, a, POS);
+    printf("B_INSERT2 INS_STR(%d, %s, %d)\n", r, a.c_str(), POS);
+    insert_str(r, a, POS, val);
 
     printf("%d\n", base.size());
-    printvec(base);
+//    darr::printvec(base);
     printf("%d\n", check.size());
-    printvec(check);
+//    darr::printvec(check);
     printf("%d\n", tail.size());
-    printvec_char(tail);
+//    printvec_char(tail);
 //    exit(1);
 };
 
 
-int DoubleArray::x_check(std::string list) {
+template<typename val_t>
+int darr::DoubleArray<val_t>::x_check(std::string list) {
     int minq = -1;
     int minc = -1;
     bool found = false;
@@ -414,6 +463,9 @@ int DoubleArray::x_check(std::string list) {
             minc = c;
         }
         for (int q=0; q < check[0]; ++q) {
+            if (q + c >= check.size()) {
+                continue;
+            }
 //        for (int q=0; q < check.size(); ++q) {
             if (check[q + c] == -1) {
                 if (q < minq) {
@@ -428,6 +480,7 @@ int DoubleArray::x_check(std::string list) {
         printf("minq update %d - %d = %d\n", check.size(), minc, minq);
         base.push_back(0);
         check.push_back(-1);
+        value.push_back(0);
     }
     std::cout << "found:" << found << std::endl;
 
@@ -435,7 +488,8 @@ int DoubleArray::x_check(std::string list) {
     return minq;
 };
 
-std::string DoubleArray::set_list(int k) {
+template<typename val_t>
+std::string darr::DoubleArray<val_t>::set_list(int k) {
     std::string ret;
     for (int i=0; i < check.size(); ++i) {
         if (check[base[k] + i] == k) {
@@ -445,7 +499,9 @@ std::string DoubleArray::set_list(int k) {
     return ret;
 };
 
-int DoubleArray::modify(int current_s, int h, std::string add, std::string org) {
+//int darr::DoubleArray::modify(int current_s, int h, std::string add, std::string org) {
+template<typename val_t>
+int darr::DoubleArray<val_t>::modify(int current_s, int h, std::string add, std::string org) {
     int old_base = base[h];
     printf("old_base = BASE[h=%d] = %d\n", h, old_base);
     base[h] = x_check(_or(add, org));
@@ -463,11 +519,12 @@ int DoubleArray::modify(int current_s, int h, std::string add, std::string org) 
 
         check[t2] = h;
         base[t2] = base[t];
+        value[t2] = value[t];
         printf("check[t2=%d] = %d\n", t2, h);
         printf("base[t2=%d] = base[t] = %d\n", t2, h, base[t2]);
 
         if (base[t] > 0) {
-            for (int q=0; q < check.size(); ++q) {
+            for (int q=0; q < check[0]; ++q) {
                 if (check[q] == t) {
                     check[q] = t2;
                 }
@@ -481,8 +538,11 @@ int DoubleArray::modify(int current_s, int h, std::string add, std::string org) 
         printf("check[t=%d] = 0\n", t);
         base[t] = 0;
         check[t] = 0;
+        value[t] = 0;
     }
     return current_s;
 };
 
-
+template class darr::DoubleArray<int>;
+template class darr::DoubleArray<float>;
+//template class darr::DoubleArray<double>;
