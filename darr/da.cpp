@@ -101,6 +101,74 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
 };
 
 template<typename val_t>
+int darr::DoubleArray<val_t>::del(const std::string& key) {
+    std::string key_ = key + "#";
+    const char* s = key_.c_str();
+    int n_char = strlen(s);
+
+    int r = 0; // current node id
+    int h = 0; // current position of the given string
+    int t = 0;
+
+    while (1) {
+        if (base[r] < 0) {
+            break;
+        }
+
+
+#ifdef DEBUG
+        int a = keymap[key_[h]];
+#else
+        int a = key_[h];
+#endif
+
+        t = base[r] + a; // 遷移先
+
+#ifdef DEBUG
+        printf("t=%d\n", t);
+#endif
+        
+        if (check[t] != r) {
+            return -1;
+        } else {
+            r = t;
+        }
+
+        h += 1;
+    }
+
+    if (h == n_char+1) {
+#ifdef DEBUG
+        printf("found1: t=%d\n", t);
+        std::cout << "value=" << value[t] << std::endl;
+#endif
+        base[t] = 0;
+        check[t] = -1;
+        value[t] = val_t{};
+        return t;
+    } else {
+        std::string s_temp = fetch_str(-base[r]);
+
+        std::string a_h1 = key_.substr(h, key_.size());
+        if (str_cmp(a_h1, s_temp)==-1) {
+#ifdef DEBUG
+            printf("found2: t=%d\n", t);
+            std::cout << "value=" << value[t] << std::endl;
+#endif
+            base[t] = 0;
+            check[t] = -1;
+            value[t] = val_t{};
+
+            return t;
+        } else {
+            return -1;
+        }
+    }
+};
+
+
+
+template<typename val_t>
 val_t darr::DoubleArray<val_t>::get(const std::string& key) {
     int id = has(key);
     if (id != -1) {

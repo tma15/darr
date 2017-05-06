@@ -46,6 +46,12 @@ int main(int argc, char const* argv[]) {
         std::cout << keys[i] << " expect:" << expect << " got:" << got  << std::endl;
     }
 
+    for (int i=0; i < keys.size(); ++i) {
+        da2.del(keys[i]);
+        int k = da2.has(keys[i]);
+        printf("got %d expect -1\n", k);
+    }
+
     std::string k1 = "abcd";
     int id1 = da2.has(k1);
     std::cout << k1 << " expect:-1" << " got:" << id1 << std::endl;
