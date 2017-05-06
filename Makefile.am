@@ -1,1 +1,1 @@
-SUBDIRS = darr
+SUBDIRS = darr example

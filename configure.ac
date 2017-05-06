@@ -36,5 +36,6 @@ AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
 AC_CONFIG_FILES([
 		 Makefile
 		 darr/Makefile
+		 example/Makefile
 		 ])
 AC_OUTPUT
