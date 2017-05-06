@@ -42,9 +42,7 @@ std::string darr::_or(std::string x, std::string y) {
 };
 
 template<typename val_t>
-//int darr::DoubleArray<val_t>::has(std::string key) {
 int darr::DoubleArray<val_t>::has(const std::string& key) {
-//    key += "#";
     std::string key_ = key + "#";
     const char* s = key_.c_str();
     int n_char = strlen(s);
@@ -102,13 +100,22 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
     }
 };
 
+template<typename val_t>
+val_t darr::DoubleArray<val_t>::get(const std::string& key) {
+    int id = has(key);
+    if (id != -1) {
+        val_t val = value[id];
+        return val;
+    } else {
+        std::cerr << "Key Error: " << key << std::endl;
+        exit(1);
+    }
+};
+
 
 template<typename val_t>
-//bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
 bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) {
     std::string key_ = key + "#";
-//    key += "#";
-//    const char* s = key.c_str();
     const char* s = key_.c_str();
     int n_char = strlen(s);
 
@@ -116,17 +123,14 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
     int h = 0; // current position of the given string
 
 #ifdef DEBUG
-//    printf("INSERT %s %f\n", key.c_str(), val);
     printf("INSERT %s %f\n", key_.c_str(), val);
 #endif
 
     while (1) {
 
 #ifdef DEBUG
-//        int a = keymap[key[h]];
         int a = keymap[key_[h]];
 #else
-//        int a = key[h];
         int a = key_[h];
 #endif
 
@@ -142,18 +146,15 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
         }
 
 #ifdef DEBUG
-//        printf("t = base[r=%d] + %c = %d\n", r, key[h], t);
         printf("t = base[r=%d] + %c = %d\n", r, key_[h], t);
         printf("size:%d check[t=%d]=%d\n", check.size(), t, check[t]);
 #endif
 
         if (check[t] != r) {
-//            std::string sub_key = key.substr(h, key.size());
             std::string sub_key = key_.substr(h, key_.size());
             a_insert(r, sub_key, val);
 
 #ifdef DEBUG
-//            printf("after insert %s t=%d\n", key.c_str(), t);
             printf("after insert %s t=%d\n", key_.c_str(), t);
 //            darr::printvec(base);
 //            darr::printvec(check);
@@ -177,7 +178,6 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
         return true;
     } else {
         std::string s_temp = fetch_str(-base[r]);
-//        std::string remain = key.substr(h, key.size());
         std::string remain = key_.substr(h, key_.size());
 
 #ifdef DEBUG
@@ -210,7 +210,6 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
 };
 
 template<typename val_t>
-//void darr::DoubleArray<val_t>::a_insert(int r, std::string key, val_t val) {
 void darr::DoubleArray<val_t>::a_insert(int r, const std::string& key, const val_t& val) {
 
 #ifdef DEBUG
@@ -393,7 +392,6 @@ int darr::DoubleArray<val_t>::str_cmp(const std::string& x, const std::string& y
 };
 
 template<typename val_t>
-//void darr::DoubleArray<val_t>::b_insert(int r, std::string prefix, std::string a, std::string b, val_t val) {
 void darr::DoubleArray<val_t>::b_insert(int r, const std::string& prefix, const std::string& a, const std::string& b, const val_t& val) {
 
 #ifdef DEBUG
@@ -441,7 +439,6 @@ void darr::DoubleArray<val_t>::b_insert(int r, const std::string& prefix, const 
 
 
 template<typename val_t>
-//int darr::DoubleArray<val_t>::x_check(std::string list) {
 int darr::DoubleArray<val_t>::x_check(const std::string& list) {
     int minq = -1;
     int minc = -1;

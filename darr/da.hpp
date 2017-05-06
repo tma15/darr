@@ -101,6 +101,7 @@ class DoubleArray {
         bool insert(const std::string& key, const val_t& val);
 
         int has(const std::string& key);
+        val_t get(const std::string& key);
 
         void save(const char* filename);
         void load(const char* filename);
