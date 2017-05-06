@@ -41,7 +41,7 @@ int main(int argc, char const* argv[]) {
 
     int j = 1;
     for (int i=0; i < keys.size(); ++i) {
-        float expect = j * 2.;
+        float expect = values[i];
         float got = da2.get(keys[i]);
         std::cout << keys[i] << " expect:" << expect << " got:" << got  << std::endl;
         j += 1;
@@ -49,22 +49,11 @@ int main(int argc, char const* argv[]) {
 
     std::string k1 = "abcd";
     int id1 = da2.has(k1);
-    printf("id1:%d\n", id1);
-    if (id1 != -1) {
-        float v1 = da2.value[id1];
-        std::cout << k1  << " id:" << id1 << " expect: -1" << std::endl;
-        std::cout << "v:" << v1 << std::endl;
-    }
+    std::cout << k1 << " expect:-1" << " got:" << id1 << std::endl;
 
     std::string k2 = "bed";
     int id2 = da2.has(k2);
-    printf("id2:%d\n", id2);
-    if (id2 != -1) {
-        float v2 = da2.value[id2];
-        std::cout << k2  << " id:" << id2 << " expect: -1" << std::endl;
-        std::cout << "v:" << v2 << std::endl;
-    }
-
+    std::cout << k2 << " expect:-1" << " got:" << id1 << std::endl;
     
     return 0;
 }
