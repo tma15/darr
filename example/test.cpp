@@ -40,12 +40,10 @@ int main(int argc, char const* argv[]) {
     darr::DoubleArray<float> da2;
     da2.load("da_file");
 
-    int j = 1;
     for (int i=0; i < keys.size(); ++i) {
         float expect = values[i];
         float got = da2.get(keys[i]);
         std::cout << keys[i] << " expect:" << expect << " got:" << got  << std::endl;
-        j += 1;
     }
 
     std::string k1 = "abcd";
