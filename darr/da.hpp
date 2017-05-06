@@ -14,10 +14,31 @@ std::string _or(std::string x, std::string y);
 
 template <typename val_t>
 class DoubleArray {
-    public:
+    private:
         std::vector<int> base;
         std::vector<int> check;
         std::vector<char> tail;
+
+        void a_insert(int r, const std::string& a, const val_t& val);
+
+        void b_insert(int r, const std::string& prefix,
+                const std::string& a, const std::string& b, const val_t& val);
+
+        void insert_str(int h, const std::string& k, int d_pos, const val_t& val);
+
+        int str_tail(int p, const std::string& y);
+
+        std::string fetch_str(int p);
+
+        int str_cmp(const std::string& x, const std::string& y);
+
+        int x_check(const std::string& list);
+
+        std::string set_list(int k);
+
+        int modify(int current_s, int h, const std::string& add, const std::string& org);
+
+    public:
         std::vector<val_t> value;
 
 #ifdef DEBUG
@@ -77,29 +98,10 @@ class DoubleArray {
 
         }
 
-        bool insert(std::string key, val_t val);
+        bool insert(const std::string& key, const val_t& val);
 
-        int has(std::string key);
+        int has(const std::string& key);
 
-        void a_insert(int r, std::string a, val_t val);
-
-        void b_insert(int r, std::string prefix, std::string a, std::string b, val_t val);
-
-        int x_check(std::vector<int> list);
-
-        void insert_str(int h, std::string k, int d_pos, val_t val);
-
-        int str_tail(int p, std::string y);
-
-        std::string fetch_str(int p);
-
-        int str_cmp(std::string x, std::string y);
-
-        int x_check(std::string list);
-
-        std::string set_list(int k);
-
-        int modify(int current_s, int h, std::string add, std::string org);
 
 };
 
