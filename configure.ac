@@ -7,6 +7,8 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([darr/da.cpp])
 AC_CONFIG_HEADERS([config.h])
 
+AC_PROG_LIBTOOL
+
 # Checks for programs.
 AC_PROG_CXX
 
