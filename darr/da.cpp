@@ -41,29 +41,6 @@ std::string darr::_or(std::string x, std::string y) {
     return ret;
 };
 
-//void DoubleArray::build(std::string filename) {
-//    std::ifstream ifs(filename.c_str());
-
-//    if (ifs.fail()) {
-//        std::cerr << "failed to open:" << filename << std::endl;
-//    }
-
-//    std::string line;
-
-//    std::vector<std::string> keys;
-
-//    while (getline(ifs, line)) {
-//        keys.push_back(line);
-
-//        insert(line);
-
-//        bool ok = has(line);
-//        std::cout << line << " has:" << ok << std::endl;
-//    }
-//    
-//};
-
-//bool DoubleArray::has(std::string key) {
 template<typename val_t>
 int darr::DoubleArray<val_t>::has(std::string key) {
     key += "#";
@@ -79,14 +56,21 @@ int darr::DoubleArray<val_t>::has(std::string key) {
             break;
         }
 
+
+#ifdef DEBUG
+        int a = keymap[key[h]];
+#else
         int a = key[h];
-//        int a = keymap[key[h]];
+#endif
+
         t = base[r] + a; // 遷移先
+
+#ifdef DEBUG
         printf("t=%d\n", t);
+#endif
         
         if (check[t] != r) {
             return -1;
-//            return false;
         } else {
             r = t;
         }
@@ -95,22 +79,23 @@ int darr::DoubleArray<val_t>::has(std::string key) {
     }
 
     if (h == n_char+1) {
+#ifdef DEBUG
         printf("found1: t=%d\n", t);
         std::cout << "value=" << value[t] << std::endl;
+#endif
         return t;
-//        return true;
     } else {
         std::string s_temp = fetch_str(-base[r]);
 
         std::string a_h1 = key.substr(h, key.size());
         if (str_cmp(a_h1, s_temp)==-1) {
+#ifdef DEBUG
             printf("found2: t=%d\n", t);
             std::cout << "value=" << value[t] << std::endl;
+#endif
             return t;
-//            return true;
         } else {
             return -1;
-//            return false;
         }
     }
 };
@@ -118,7 +103,6 @@ int darr::DoubleArray<val_t>::has(std::string key) {
 
 template<typename val_t>
 bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
-//bool darr::DoubleArray<val_t>::insert(std::string key, float val) {
     key += "#";
     const char* s = key.c_str();
     int n_char = strlen(s);
@@ -126,22 +110,18 @@ bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
     int r = 0; // current node id
     int h = 0; // current position of the given string
 
+#ifdef DEBUG
     printf("INSERT %s %f\n", key.c_str(), val);
-
-//    const char* tmp2 = key.c_str();
-//    setlocale( LC_CTYPE, "jpn" );
-
-//    while (*tmp2) {
-//        char size = mblen(tmp2, MB_CUR_MAX);
-//        printf("HOGE %.*s\n", size, tmp2);
-//        printf("%d\n", size);
-//        tmp2 += size;
-//    };
-    printf("basesize:%d\n", base.size());
+#endif
 
     while (1) {
+
+#ifdef DEBUG
+        int a = keymap[key[h]];
+#else
         int a = key[h];
-//        int a = keymap[key[h]];
+#endif
+
         int t = base[r] + a; // 遷移先
 
         if (t > check.size()) {
@@ -153,19 +133,23 @@ bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
             }
         }
 
+#ifdef DEBUG
         printf("t = base[r=%d] + %c = %d\n", r, key[h], t);
         printf("size:%d check[t=%d]=%d\n", check.size(), t, check[t]);
+#endif
 
         if (check[t] != r) {
             std::string sub_key = key.substr(h, key.size());
             a_insert(r, sub_key, val);
 
+#ifdef DEBUG
             printf("after insert %s t=%d\n", key.c_str(), t);
 //            darr::printvec(base);
 //            darr::printvec(check);
 //            darr::printvec_char(tail);
-
             printf("POS=%d\n", POS);
+#endif
+
             return false;
         } else {
             r = t;
@@ -184,12 +168,12 @@ bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
         std::string s_temp = fetch_str(-base[r]);
         std::string remain = key.substr(h, key.size());
 
-//        printf("s_temp:%s\n", s_temp.c_str());
-//        printf("remain:%s\n", remain.c_str());
+#ifdef DEBUG
+        printf("s_temp:%s\n", s_temp.c_str());
+        printf("remain:%s\n", remain.c_str());
+#endif
 
         int prefix_len = str_cmp(remain, s_temp);
-//        printf("prefix_len:%d\n", prefix_len);
-//        printf("h:%d\n", h);
         if (prefix_len==-1) {
             return true;
         } else {
@@ -200,10 +184,12 @@ bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
 
             b_insert(r, prefix, remain_key, remain_s_temp, val);
 
+#ifdef DEBUG
             printf("after insert %s t=%d\n", key.c_str(), h);
 //            darr::printvec(base);
 //            darr::printvec(check);
 //            darr::printvec_char(tail);
+#endif
 
             return false;
         }
@@ -213,39 +199,59 @@ bool darr::DoubleArray<val_t>::insert(std::string key, val_t val) {
 
 template<typename val_t>
 void darr::DoubleArray<val_t>::a_insert(int r, std::string key, val_t val) {
-//void darr::DoubleArray<val_t>::a_insert(int r, std::string key, float val) {
+#ifdef DEBUG
     printf("A_INSERT(%d %s)\n", r, key.c_str());
-
+    int a = keymap[key[0]];
+#else
     int a = key[0];
-//    int a = keymap[key[0]];
+#endif
+
     int t = base[r] + a;
 
+#ifdef DEBUG
     printf("t = base[r=%d] + %c = %d\n", r, key[0], t);
     printf("check[t=%d] = %d\n", t, check[t]);
+#endif
 
     if (check[t] == -1) {
+#ifdef DEBUG
         printf("A_INSERT INS_STR(%d, %s, %d)\n", r, key.c_str(), POS);
+#endif
         insert_str(r, key, POS, val);
     } else {
         std::string rlist = set_list(r);
         std::string tlist = set_list(check[t]);
 
+#ifdef DEBUG
         printf("R-LIST = SET-LIST(%d) = %s\n", r, rlist.c_str());
         printf("T-LIST = SET-LIST(%d) = %s\n", check[t], tlist.c_str());
+#endif
 
         int s;
         if (rlist.size() + 1 < tlist.size()) {
+#ifdef DEBUG
             printf("N(R-LIST) + 1 = %d < N(K-LIST) = %d\n", rlist.size()+1, tlist.size());
+#endif
+
             std::string b = key.substr(0, 1);
+
+#ifdef DEBUG
             printf("MODIFY(%d, %d, %s, %s)\n", r, r, b.c_str(), rlist.c_str());
+#endif
+
             s = modify(r, r, b, rlist);
         } else {
+#ifdef DEBUG
             printf("N(R-LIST) + 1 = %d >= N(K-LIST) = %d\n", rlist.size()+1, tlist.size());
             printf("MODIFY(%d, %d, , %s)\n", r, check[t], tlist.c_str());
+#endif
+
             s = modify(r, check[t], "", tlist);
         }
 
+#ifdef DEBUG
         printf("A_INSERT INS_STR(%d, %s, %d)\n", s, key.c_str(), POS);
+#endif
         insert_str(s, key, POS, val);
 
 //        darr::printvec(base);
@@ -257,9 +263,12 @@ void darr::DoubleArray<val_t>::a_insert(int r, std::string key, val_t val) {
 
 template<typename val_t>
 void darr::DoubleArray<val_t>::insert_str(int h, std::string key, int d_pos, val_t val) {
-//void darr::DoubleArray<val_t>::insert_str(int h, std::string key, int d_pos, float val) {
+#ifdef DEBUG
+    int e1 = keymap[key[0]];
+#else
     int e1 = key[0];
-//    int e1 = keymap[key[0]];
+#endif
+
     int t = base[h] + e1;
 
     int basesize = base.size();
@@ -277,58 +286,36 @@ void darr::DoubleArray<val_t>::insert_str(int h, std::string key, int d_pos, val
     int valuesize = value.size();
     if (t >= valuesize) {
         for (int k=valuesize; k <= t; ++k) {
-//            value.push_back(0);
             value.push_back(int{});
         }
     }
 
+#ifdef DEBUG
     printf("insert! %s t=%d val=%f\n", key.c_str(), t, val);
     printf("t = base[h=%d] + %c = %d + %d = %d\n", h, key[0], base[h], e1, t);
+#endif
 
     base[t] = -d_pos;
     check[t] = h;
-//    printf("base size:%d t=%d\n", base.size(), t);
-//    printf("check size:%d t=%d\n", check.size(), t);
-//    printf("value size:%d t=%d\n", value.size(), t);
-//    darr::printvec(value);
-//    printf("val[t=%d] before:%f\n", t, value[t]);
     value[t] = val;
-//    printf("val[t=%d] after:%f\n", t, val);
-//    darr::printvec(value);
 
+#ifdef DEBUG
     printf("INSERT base[t=%d]=%d\n", t, base[t]);
     printf("INSERT check[t=%d]=%d\n", t, check[t]);
-
-//    for (int i= 0 ; i < base.size(); ++i) {
-//        printf("%d base %d\n", i, base[i]);
-//    }
+#endif
 
     check[0] = check.size();
 
+#ifdef DEBUG
     printf("key=%s\n", key.c_str());
-    std::string a = key.substr(1, key.size());
-//    std::string e = a + '$';
+#endif
     std::string e = key.substr(1, key.size()) + '$';
     const char* tmp = key.c_str();
 
-//    const char* tmp2 = key.c_str();
-//    while (*tmp2) {
-//        char size = mblen(tmp2, MB_CUR_MAX);
-//        printf("tmp2 %.*s\n", size, tmp2);
-//        tmp2 += size;
-//    };
-
-//    printf("key %s\n", key.c_str());
-//    printf("tmp %d %s\n", strlen(tmp), tmp);
-//    printf("tmp %d %s\n", std::strlen(tmp), tmp);
-//    for (int i=0; i < strlen(tmp); ++i) {
-//        printf("tmp i:%d %s\n", i, tmp[i]);
-//        std::cout << i << " " << tmp[i] << std::endl;
-//    }
-//    char* _key[strlen(key.c_str())-1];
-//    char* e = new char[strlen(key.c_str())];
     int pos = str_tail(d_pos, e);
+#ifdef DEBUG
     printf("POS = STR_TAIL(%d, %s) = %d\n", d_pos, e.c_str(), POS + pos);
+#endif
     POS = POS + pos;
 
 };
@@ -392,19 +379,27 @@ int darr::DoubleArray<val_t>::str_cmp(std::string x, std::string y) {
 };
 
 template<typename val_t>
-//void darr::DoubleArray<val_t>::b_insert(int r, std::string prefix, std::string a, std::string b, float val) {
 void darr::DoubleArray<val_t>::b_insert(int r, std::string prefix, std::string a, std::string b, val_t val) {
 
+#ifdef DEBUG
     printf("B_INSERT(%d, %s, %s, %s)\n", r, prefix.c_str(), a.c_str(), b.c_str());
+#endif
 
     int old_pos = -base[r];
 
+#ifdef DEBUG
     printf("old_pos = -base[r=%d] = %d\n", r, old_pos);
+#endif
 
     for (int i=0; i < prefix.size(); ++i) {
         std::string pi = prefix.substr(i, i+1);
-//        int b = keymap[prefix[i]];
+
+#ifdef DEBUG
+        int b = keymap[prefix[i]];
+#else
         int b = prefix[i];
+#endif
+
         base[r] = x_check(pi);
         check[base[r] + b] = r;
         r = base[r] + b;
@@ -415,38 +410,18 @@ void darr::DoubleArray<val_t>::b_insert(int r, std::string prefix, std::string a
     int q = x_check(list);
     base[r] = q;
 
-//    float v = value[r];
-//    fprintf(stderr, "r=%d\n", r);
-//    fprintf(stderr, "size=%d\n", value.size());
-//    fprintf(stderr, "value[i=0]=%d\n", value[0]);
-//    fprintf(stderr, "value[i=1]=%d\n", value[1]);
-//    value[r] = 1;
-//    for (int i=0; i < value.size(); ++i) {
-//        value[i] = 1;
-//        fprintf(stderr, "value[i=%d]=%d\n", i, value[i]);
-//        fprintf(stdout, "value[i=%d]=%d\n", i, value[i]);
-//    }
-//    darr::printvec(value);
+#ifdef DEBUG
     printf("r=%d value[r=%d]=%d\n", r, r, value[r]);
     printf("B_INSERT1 INS_STR(%d, %s, %d)\n", r, b.c_str(), old_pos);
-//    insert_str(r, b, old_pos, val);
+#endif
     insert_str(r, b, old_pos, value[r]);
+
+#ifdef DEBUG
     printf("r=%d value[r=%d]=%d\n", r, r, value[r]);
-
-//    darr::printvec(base);
-//    darr::printvec(check);
-//    printvec_char(tail);
-
     printf("B_INSERT2 INS_STR(%d, %s, %d)\n", r, a.c_str(), POS);
+#endif
     insert_str(r, a, POS, val);
 
-    printf("%d\n", base.size());
-//    darr::printvec(base);
-    printf("%d\n", check.size());
-//    darr::printvec(check);
-    printf("%d\n", tail.size());
-//    printvec_char(tail);
-//    exit(1);
 };
 
 
@@ -455,10 +430,17 @@ int darr::DoubleArray<val_t>::x_check(std::string list) {
     int minq = -1;
     int minc = -1;
     bool found = false;
+
+#ifdef DEBUG
     printf("list '%s'\n", list.c_str());
+#endif
+
     for (int i=0; i < list.size(); ++i) {
+#ifdef DEBUG
+        int c = keymap[list[i]];
+#else
         int c = list[i];
-//        int c = keymap[list[i]];
+#endif
         if (c < minc) {
             minc = c;
         }
@@ -466,7 +448,6 @@ int darr::DoubleArray<val_t>::x_check(std::string list) {
             if (q + c >= check.size()) {
                 continue;
             }
-//        for (int q=0; q < check.size(); ++q) {
             if (check[q + c] == -1) {
                 if (q < minq) {
                     minq = q;
@@ -477,14 +458,18 @@ int darr::DoubleArray<val_t>::x_check(std::string list) {
     }
     if (!found) {
         minq = check.size() - minc;
+#ifdef DEBUG
         printf("minq update %d - %d = %d\n", check.size(), minc, minq);
+#endif
         base.push_back(0);
         check.push_back(-1);
         value.push_back(0);
     }
-    std::cout << "found:" << found << std::endl;
 
+#ifdef DEBUG
+    std::cout << "found:" << found << std::endl;
     printf("minq:%d\n", minq);
+#endif
     return minq;
 };
 
@@ -493,35 +478,54 @@ std::string darr::DoubleArray<val_t>::set_list(int k) {
     std::string ret;
     for (int i=0; i < check.size(); ++i) {
         if (check[base[k] + i] == k) {
+#ifdef DEBUG
             ret += itos[i];
+#else
+            ret += i;
+#endif
         }
     }
     return ret;
 };
 
-//int darr::DoubleArray::modify(int current_s, int h, std::string add, std::string org) {
 template<typename val_t>
 int darr::DoubleArray<val_t>::modify(int current_s, int h, std::string add, std::string org) {
     int old_base = base[h];
+#ifdef DEBUG
     printf("old_base = BASE[h=%d] = %d\n", h, old_base);
+#endif
     base[h] = x_check(_or(add, org));
     std::string o = _or(add, org);
+#ifdef DEBUG
     printf("BASE[h=%d] = X_CHECK(%s) = %d\n", h, o.c_str(), base[h]);
+#endif
 
     for (int i=0; i < org.size(); ++i) {
-//        int c = keymap[org[i]];
+#ifdef DEBUG
+        int c = keymap[org[i]];
+#else
         int c = org[i];
+#endif
 
         int t = old_base + c;
+
+#ifdef DEBUG
         printf("t = old_base(%d) + %c(%d) = %d\n", old_base, org[i], c, t);
+#endif
+
         int t2 = base[h] + c;
+#ifdef DEBUG
         printf("t2 = base[h=%d] + %c(%d) = %d\n", h, org[i], c, t2);
+#endif
 
         check[t2] = h;
         base[t2] = base[t];
         value[t2] = value[t];
+
+#ifdef DEBUG
         printf("check[t2=%d] = %d\n", t2, h);
         printf("base[t2=%d] = base[t] = %d\n", t2, h, base[t2]);
+#endif
 
         if (base[t] > 0) {
             for (int q=0; q < check[0]; ++q) {
@@ -529,13 +533,18 @@ int darr::DoubleArray<val_t>::modify(int current_s, int h, std::string add, std:
                     check[q] = t2;
                 }
                 if (t == current_s) {
+#ifdef DEBUG
                     printf("current_s = %d is changed by %d\n", current_s, t2);
+#endif
                     current_s = t2;
                 }
             }
         }
+
+#ifdef DEBUG
         printf("base[t=%d] = 0\n", t);
         printf("check[t=%d] = 0\n", t);
+#endif
         base[t] = 0;
         check[t] = 0;
         value[t] = 0;
@@ -545,4 +554,4 @@ int darr::DoubleArray<val_t>::modify(int current_s, int h, std::string add, std:
 
 template class darr::DoubleArray<int>;
 template class darr::DoubleArray<float>;
-//template class darr::DoubleArray<double>;
+template class darr::DoubleArray<double>;

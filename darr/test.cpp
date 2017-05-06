@@ -5,9 +5,12 @@
 #include "da.hpp"
 
 int main(int argc, char const* argv[]) {
+#ifdef DEBUG
+    printf("DEBUG\n");
+#endif
+
     darr::DoubleArray<float> da = darr::DoubleArray<float>();
 
-//    std::string filename = "sample.txt";
     std::string filename = std::string(argv[1]);
 
     std::ifstream ifs(filename.c_str());
@@ -28,7 +31,6 @@ int main(int argc, char const* argv[]) {
         i += 1;
     }
     
-    printf("\n");
     int j = 1;
     for (int i=0; i < keys.size(); ++i) {
         int id = da.has(keys[i]);

@@ -18,28 +18,22 @@ class DoubleArray {
         std::vector<int> base;
         std::vector<int> check;
         std::vector<char> tail;
-
-//        std::vector<int> value;
         std::vector<val_t> value;
 
+#ifdef DEBUG
         std::map<char, int> keymap;
         std::map<int, char> itos;
+#endif
+
         int POS;
 
         DoubleArray() {
-            printf("INIT\n");
             POS = 1;
-//            base = std::vector<int>{0};
             base.push_back(0);
-//            check = std::vector<int>{1};
             check.push_back(1);
-//            value = std::vector<int>{0};
-//            value = std::vector<val_t>{ val_t{} };
             value.push_back(val_t{});
 
-            printf("base:%d\n", base.size());
-            printf("base[0]:%d\n", base[0]);
-
+#ifdef DEBUG
             keymap.insert(std::make_pair('a', 1));
             keymap.insert(std::make_pair('b', 2));
             keymap.insert(std::make_pair('c', 3));
@@ -79,26 +73,22 @@ class DoubleArray {
             itos.insert(std::make_pair(17, 'q'));
             itos.insert(std::make_pair(18, 'r'));
             itos.insert(std::make_pair(19, '#'));
+#endif
 
         }
 
-//        void build(std::string filename);
-
-//        bool insert(std::string key);
-
-//        bool insert(std::string key, float val);
         bool insert(std::string key, val_t val);
 
         int has(std::string key);
 
-//        void a_insert(int r, std::string a, float val);
         void a_insert(int r, std::string a, val_t val);
-//        void b_insert(int r, std::string prefix, std::string a, std::string b, float val);
+
         void b_insert(int r, std::string prefix, std::string a, std::string b, val_t val);
 
         int x_check(std::vector<int> list);
-//        void insert_str(int h, std::string k, int d_pos, float val);
+
         void insert_str(int h, std::string k, int d_pos, val_t val);
+
         int str_tail(int p, std::string y);
 
         std::string fetch_str(int p);
