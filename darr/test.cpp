@@ -31,32 +31,66 @@ int main(int argc, char const* argv[]) {
         i += 1;
     }
     
+//    int j = 1;
+//    for (int i=0; i < keys.size(); ++i) {
+//        int id = da.has(keys[i]);
+//        float expect = j * 2.;
+//        float got = da.value[id];
+//        std::cout << keys[i] << " id:" << id << " expect:" << expect << " got:" << got  << std::endl;
+//        j += 1;
+//    }
+
+//    std::string k1 = "abcd";
+//    int id1 = da.has(k1);
+//    printf("id1:%d\n", id1);
+//    if (id1 < da.value.size()) {
+//        float v1 = da.value[id1];
+//        std::cout << k1  << " id:" << id1 << " expect: -1" << std::endl;
+//        std::cout << "v:" << v1 << std::endl;
+//    }
+
+//    std::string k2 = "bed";
+//    int id2 = da.has(k2);
+//    printf("id2:%d\n", id2);
+//    if (id2 < da.value.size()) {
+//        float v2 = da.value[id2];
+//        std::cout << k2  << " id:" << id2 << " expect: -1" << std::endl;
+//        std::cout << "v:" << v2 << std::endl;
+//    }
+
+    da.save("da");
+
+
+    darr::DoubleArray<float> da2;
+    da2.load("da");
+
     int j = 1;
     for (int i=0; i < keys.size(); ++i) {
-        int id = da.has(keys[i]);
+        int id = da2.has(keys[i]);
         float expect = j * 2.;
-        float got = da.value[id];
+        float got = da2.value[id];
         std::cout << keys[i] << " id:" << id << " expect:" << expect << " got:" << got  << std::endl;
         j += 1;
     }
 
     std::string k1 = "abcd";
-    int id1 = da.has(k1);
+    int id1 = da2.has(k1);
     printf("id1:%d\n", id1);
-    if (id1 < da.value.size()) {
-        float v1 = da.value[id1];
+    if (id1 < da2.value.size()) {
+        float v1 = da2.value[id1];
         std::cout << k1  << " id:" << id1 << " expect: -1" << std::endl;
         std::cout << "v:" << v1 << std::endl;
     }
 
     std::string k2 = "bed";
-    int id2 = da.has(k2);
+    int id2 = da2.has(k2);
     printf("id2:%d\n", id2);
-    if (id2 < da.value.size()) {
-        float v2 = da.value[id2];
+    if (id2 < da2.value.size()) {
+        float v2 = da2.value[id2];
         std::cout << k2  << " id:" << id2 << " expect: -1" << std::endl;
         std::cout << "v:" << v2 << std::endl;
     }
+
     
     return 0;
 }

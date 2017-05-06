@@ -568,6 +568,80 @@ int darr::DoubleArray<val_t>::modify(int current_s, int h, const std::string& ad
     return current_s;
 };
 
+template<typename val_t>
+void darr::DoubleArray<val_t>::save(const char* filename) {
+    FILE* fp = fopen(filename, "wb");
+
+    int basesize = base.size();
+    fwrite(&basesize, sizeof(int), 1, fp);
+    fwrite(base.data(), sizeof(int), basesize, fp);
+
+    int checksize = check.size();
+    fwrite(&checksize, sizeof(int), 1, fp);
+    fwrite(check.data(), sizeof(int), checksize, fp);
+
+    int tailsize = tail.size();
+    fwrite(&tailsize, sizeof(int), 1, fp);
+    fwrite(tail.data(), sizeof(char), tail.size(), fp);
+
+    int valuesize = value.size();
+    fwrite(&valuesize, sizeof(int), 1, fp);
+    fwrite(value.data(), sizeof(val_t), value.size(), fp);
+
+#if DEBUG
+    printf("write basesize:%d\n", basesize);
+    printf("write checksize:%d\n", checksize);
+    printf("write tailsize:%d\n", tailsize);
+    printf("write valuesize:%d\n", valuesize);
+#endif
+
+    fclose(fp);
+};
+
+template<typename val_t>
+void darr::DoubleArray<val_t>::load(const char* filename) {
+    FILE* fp = fopen(filename, "rb");
+
+    int basesize;
+    fread(&basesize, sizeof(int), 1, fp);
+    base = std::vector<int>(basesize, 0);
+    for (int i=0; i < basesize; ++i) {
+        fread(&base[i], sizeof(int), 1, fp);
+    }
+
+    int checksize;
+    fread(&checksize, sizeof(int), 1, fp);
+    check = std::vector<int>(checksize, 0);
+    for (int i=0; i < checksize; ++i) {
+        fread(&check[i], sizeof(int), 1, fp);
+    }
+
+    int tailsize;
+    fread(&tailsize, sizeof(int), 1, fp);
+    tail = std::vector<char>(tailsize, 0);
+    for (int i=0; i < tailsize; ++i) {
+        fread(&tail[i], sizeof(char), 1, fp);
+    }
+
+    int valuesize;
+    fread(&valuesize, sizeof(int), 1, fp);
+    value = std::vector<val_t>(valuesize, 0);
+    for (int i=0; i < valuesize; ++i) {
+        fread(&value[i], sizeof(val_t), 1, fp);
+    }
+
+#if DEBUG
+    printf("read basesize:%d\n", basesize);
+    printf("read checksize:%d\n", checksize);
+    printf("read tailsize:%d\n", tailsize);
+    printf("read valuesize:%d\n", valuesize);
+#endif
+
+    fclose(fp);
+};
+
+
+
 template class darr::DoubleArray<int>;
 template class darr::DoubleArray<float>;
 template class darr::DoubleArray<double>;

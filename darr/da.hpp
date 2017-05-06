@@ -102,6 +102,8 @@ class DoubleArray {
 
         int has(const std::string& key);
 
+        void save(const char* filename);
+        void load(const char* filename);
 
 };
 
