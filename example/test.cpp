@@ -43,13 +43,15 @@ int main(int argc, char const* argv[]) {
     for (int i=0; i < keys.size(); ++i) {
         float expect = values[i];
         float got = da2.get(keys[i]);
-        std::cout << keys[i] << " expect:" << expect << " got:" << got  << std::endl;
+        std::cout << "key:" << keys[i] << " value expect:" << expect << " got:" << got  << std::endl;
     }
+    printf("\n");
 
     for (int i=0; i < keys.size(); ++i) {
+        printf("delete key:%s\n", keys[i].c_str());
         da2.del(keys[i]);
         int k = da2.has(keys[i]);
-        printf("got %d expect -1\n", k);
+        printf("key:%s expect:-1 got:%d\n\n", keys[i].c_str(), k);
     }
 
     std::string k1 = "abcd";

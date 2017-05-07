@@ -11,42 +11,58 @@ namespace darr {
 void printvec(const std::vector<int>& v); 
 void printvec_char(const std::vector<char>& v); 
 std::string _or(std::string x, std::string y);
+std::vector<uint8_t> _or2(std::vector<uint8_t> x, std::vector<uint8_t> y);
+
+std::vector<uint8_t> get_subchars(const std::vector<uint8_t>& chars, int start, int end); 
 
 template <typename val_t>
 class DoubleArray {
     private:
+        int POS;
+        std::vector<val_t> value;
+
         std::vector<int> base;
         std::vector<int> check;
+
         std::vector<char> tail;
+        std::vector<uint8_t> tail2;
 
-        void a_insert(int r, const std::string& a, const val_t& val);
+//        void a_insert(int r, const std::string& a, const val_t& val);
+        void a_insert(int r, const std::vector<uint8_t>& a, const val_t& val);
 
-        void b_insert(int r, const std::string& prefix,
-                const std::string& a, const std::string& b, const val_t& val);
+//        void b_insert(int r, const std::string& prefix,
+//                const std::string& a, const std::string& b, const val_t& val);
+        void b_insert(int r, const std::vector<uint8_t>& prefix,
+                const std::vector<uint8_t>& a, const std::vector<uint8_t>& b, const val_t& val);
 
-        void insert_str(int h, const std::string& k, int d_pos, const val_t& val);
+//        void insert_str(int h, const std::string& k, int d_pos, const val_t& val);
+        void insert_str2(int h, const std::vector<uint8_t>& k, int d_pos, const val_t& val);
 
         int str_tail(int p, const std::string& y);
+        int str_tail2(int p, const std::vector<uint8_t>& y);
 
         std::string fetch_str(int p);
+        std::vector<uint8_t> fetch_str2(int p);
 
         int str_cmp(const std::string& x, const std::string& y);
+        int mem_cmp(uint8_t* x, uint8_t* y, int len);
 
         int x_check(const std::string& list);
+        int x_check2(const std::vector<uint8_t>& list);
 
         std::string set_list(int k);
+        std::vector<uint8_t> set_list2(int k);
 
         int modify(int current_s, int h, const std::string& add, const std::string& org);
+        int modify2(int current_s, int h, const std::vector<uint8_t>& add, const std::vector<uint8_t>& org);
 
     public:
-        std::vector<val_t> value;
 
 #ifdef DEBUG
         std::map<char, int> keymap;
         std::map<int, char> itos;
 #endif
 
-        int POS;
 
         DoubleArray() {
             POS = 1;

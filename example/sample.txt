@@ -4,3 +4,5 @@ badge
 baby
 be
 hoge
+東京
+大阪
