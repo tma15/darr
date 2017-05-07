@@ -48,7 +48,7 @@ int main(int argc, char const* argv[]) {
 }
 ```
 
-## TOOD
+## TODO
 - benchmarking
 
 ## Authors
