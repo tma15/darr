@@ -45,7 +45,8 @@ std::vector<uint8_t> darr::get_subchars(const std::vector<uint8_t>& chars, int s
 template<typename val_t>
 int darr::DoubleArray<val_t>::has(const std::string& key) {
 
-    std::string key_ = key + "#";
+//    std::string key_ = key + "#";
+    std::string key_ = key + "\0";
     std::vector<uint8_t> chars;
     for (int i=0; i < key_.size(); ++i) {
         chars.push_back(key_[i]);
@@ -145,7 +146,8 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
 
 template<typename val_t>
 int darr::DoubleArray<val_t>::del(const std::string& key) {
-    std::string key_ = key + "#";
+//    std::string key_ = key + "#";
+    std::string key_ = key + "\0";
     std::vector<uint8_t> chars;
     for (int i=0; i < key_.size(); ++i) {
         chars.push_back(key_[i]);
@@ -227,7 +229,8 @@ val_t darr::DoubleArray<val_t>::get(const std::string& key) {
 
 template<typename val_t>
 bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) {
-    std::string key_ = key + "#";
+//    std::string key_ = key + "#";
+    std::string key_ = key + "\0";
 
     std::vector<uint8_t> chars;
     for (int i=0; i < key_.size(); ++i) {
@@ -495,7 +498,8 @@ std::vector<uint8_t> darr::DoubleArray<val_t>::fetch_str(int p) {
     std::vector<uint8_t> y;
     for (int i=p-1; i < tail.size(); ++i) {
         y.push_back(tail[i]);
-        if (tail[i] == '#') {
+//        if (tail[i] == '#') {
+        if (tail[i] == '\0') {
             break;
         }
     }
