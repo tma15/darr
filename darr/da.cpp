@@ -637,48 +637,76 @@ void darr::DoubleArray<val_t>::b_insert(int r, const std::vector<uint8_t>& prefi
 template<typename val_t>
 int darr::DoubleArray<val_t>::x_check(const std::vector<uint8_t>& list) {
     int minq = -1;
-    int minc = -1;
+//    int minc = -1;
+//    int minc = list[0];
+
+//    int minc = 1;
+//    if (list.size() > 0) {
+//        minc = list[0] + 1;
+//        minc = list[0];
+//    }
     bool found = false;
 
 #ifdef DEBUG
     printf("list '%s'\n", list.c_str());
 #endif
 
-    for (int i=0; i < list.size(); ++i) {
-#ifdef DEBUG
-        int c = keymap[list[i]];
-#else
-        int c = list[i];
-#endif
-        if (c < minc) {
-            minc = c;
+    int listsize = list.size();
+    for (int q=0; q < check.size(); ++q) {
+        bool ok = true;
+        for (int i=0; i < listsize; ++i) {
+            int c = list[i];
+            if (check[q + c] > -1) {
+                ok = false;
+            }
         }
-        for (int q=0; q < check[0]; ++q) {
-            if (q + c >= check.size()) {
-                continue;
-            }
-            if (check[q + c] == -1) {
-                if (q < minq) {
-                    minq = q;
-                    found = true;
-                }
-            }
+        if (ok) {
+            minq = q;
+            found = true;
+            break;
         }
     }
+
+//    int listsize = list.size();
+//    for (int i=0; i < listsize; ++i) {
+//#ifdef DEBUG
+//        int c = keymap[list[i]];
+//#else
+//        int c = list[i];
+//        int c = list[i] + 1;
+//#endif
+//        if (c < minc) {
+//            minc = c;
+//        }
+//        for (int q=0; q < check.size(); ++q) {
+//            if (q + c >= check.size()) {
+//                continue;
+//            }
+//            if (check[q + c] <= -1) {
+//                if (q < minq) {
+//                    minq = q;
+//                    found = true;
+//                }
+//            }
+//        }
+//    }
     if (!found) {
-        minq = check.size() - minc;
-#ifdef DEBUG
-        printf("minq update %d - %d = %d\n", check.size(), minc, minq);
-#endif
+//        minq = check.size() - minc;
+//#ifdef DEBUG
+//        printf("minq update: check.size() - minc = %d - %d = %d\n", check.size(), minc, minq);
+//#endif
+//        printf("expand in x_check\n");
         base.push_back(0);
         check.push_back(-1);
         value.push_back(0);
+        minq = base.size();
     }
 
-#ifdef DEBUG
-    std::cout << "found:" << found << std::endl;
-    printf("minq:%d\n", minq);
-#endif
+//#ifdef DEBUG
+//    std::cout << "found:" << found << std::endl;
+//    printf("minq:%d\n", minq);
+//#endif
+//    printf("minq:%d\n", minq);
     return minq;
 };
 
