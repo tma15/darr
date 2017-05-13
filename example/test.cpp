@@ -7,6 +7,7 @@
 void save_array(std::vector<std::string> keys, std::vector<float> values) {
     darr::DoubleArray<float> da = darr::DoubleArray<float>();
     for (int i=0; i < keys.size(); ++i) {
+        std::cout << "insert key:" << keys[i] << " value:" << values[i] << std::endl;
         da.insert(keys[i], values[i]);
     }
     da.save("da_file");

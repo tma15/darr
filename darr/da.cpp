@@ -61,7 +61,6 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
             break;
         }
 
-
 #ifdef DEBUG
         int a = keymap[key_[h]];
 #else
@@ -69,12 +68,14 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
 #endif
 
         t = base[r] + a; // 遷移先
+//        printf("move base[%d] + %c = %d + %d\n", r, chars[h], base[r], a);
 
 #ifdef DEBUG
         printf("t=%d\n", t);
 #endif
         
         if (check[t] != r) {
+//            printf("!has1 t=%d check[t=%d]=%d\n", t, t, check[t]);
             return -1;
         } else {
             r = t;
@@ -88,16 +89,54 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
         printf("found1: t=%d\n", t);
         std::cout << "value=" << value[t] << std::endl;
 #endif
+//        printf("has1\n");
         return t;
     } else {
 
-        std::vector<uint8_t> a_h12 = get_subchars(chars, h, chars.size());
-        uint8_t* a = a_h12.data();
+        std::vector<uint8_t> s_temp = fetch_str(-base[r]);
+        std::vector<uint8_t> remain = get_subchars(chars, h, n_char);
+//        std::vector<uint8_t> remain = get_subchars(chars, h+1, n_char);
+//        std::string remains;
+//        for (int i=0; i < remain.size(); ++i) {
+//            remains += remain[i];
+//        }
+//        std::cout << "remain:" << remains << std::endl;
+//        std::string stemps;
+//        for (int i=0; i < s_temp.size(); ++i) {
+//            stemps += s_temp[i];
+//        }
+//        std::cout << "s_temp:" << stemps << std::endl;
+
+        uint8_t* remain_ = remain.data();
         uint8_t* start_ptr = &tail[-base[r]-1];
-        int match = mem_cmp(start_ptr, a, a_h12.size());
+        uint8_t* s_temp_ = s_temp.data();
+        int match = mem_cmp(s_temp_, remain_, remain.size());
+
+
+//        std::vector<uint8_t> a_h12 = get_subchars(chars, h, chars.size());
+//        std::vector<uint8_t> a_h12 = get_subchars(chars, h+1, chars.size());
+//        std::string aaa;
+//        for (int i=0; i < a_h12.size(); ++i) {
+//            aaa += a_h12[i];
+//        }
+//        std::cout << "key:" << key_ << std::endl;
+//        std::cout << "a:" << aaa << std::endl;
+
+//        uint8_t* a = a_h12.data();
+//        uint8_t* start_ptr = &tail[-base[r]-1];
+
+//        std::string bbb;
+//        for (int i=0; i < a_h12.size(); ++i) {
+//            bbb += start_ptr[i];
+//        }
+//        std::cout << "b:" << bbb << std::endl;
+
+//        int match = mem_cmp(start_ptr, a, a_h12.size());
         if (match == -1) {
+//            printf("has2\n");
             return t;
         } else {
+//            printf("!has2 t=%d\n", t);
             return -1;
         }
 
@@ -229,6 +268,7 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
 
         if (check[t] != r) {
             std::vector<uint8_t> sub_key = get_subchars(chars, h, n_char);
+//            printf("A_INSERT h=%d\n", h);
             a_insert(r, sub_key, val);
 
 #ifdef DEBUG
@@ -262,17 +302,46 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
         printf("remain:%s\n", remain.c_str());
 #endif
 
-        std::vector<uint8_t> remain = get_subchars(chars, h, n_char);
+//        printf("TAIL\n");
+//        for (int i=0; i < tail.size(); ++i) {
+//            printf("%c, ", tail[i]);
+//        }
+//        printf("\n");
+//        printf("h:%d h\n", h);
+
+//        std::vector<uint8_t> remain = get_subchars(chars, h, n_char);
+        std::vector<uint8_t> remain = get_subchars(chars, h+1, n_char);
+//        std::string remains;
+//        for (int i=0; i < remain.size(); ++i) {
+//            remains += remain[i];
+//        }
+//        std::cout << "remain:" << remains << std::endl;
+//        std::string stemps;
+//        for (int i=0; i < s_temp.size(); ++i) {
+//            stemps += s_temp[i];
+//        }
+//        std::cout << "s_temp:" << stemps << std::endl;
+
         uint8_t* remain_ = remain.data();
         uint8_t* start_ptr = &tail[-base[r]-1];
-        int prefix_len = mem_cmp(start_ptr, remain_, remain.size());
+        uint8_t* s_temp_ = s_temp.data();
+        int prefix_len = mem_cmp(s_temp_, remain_, remain.size());
         if (prefix_len==-1) {
             return true;
         } else {
 
-            std::vector<uint8_t> prefix = get_subchars(chars, h, prefix_len);
+//            std::vector<uint8_t> prefix = get_subchars(chars, h, prefix_len);
+            std::vector<uint8_t> prefix = get_subchars(chars, h+1, h+1+prefix_len);
             std::vector<uint8_t> remain_key = get_subchars(chars, h+prefix_len+1, n_char);
             std::vector<uint8_t> remain_s_temp = get_subchars(s_temp, prefix_len, s_temp.size());
+
+//            std::string prefixs;
+//            for (int i=0; i < prefix.size(); ++i) {
+//                prefixs += prefix[i];
+//            }
+//            std::cout << "prefix:" << prefixs << std::endl;
+
+//            printf("h:%d prefix_len:%d prefixsize:%d\n", h, prefix_len, prefix.size());
             b_insert(r, prefix, remain_key, remain_s_temp, val);
 
 
@@ -300,6 +369,7 @@ void darr::DoubleArray<val_t>::a_insert(int r, const std::vector<uint8_t>& key, 
 #endif
 
     int t = base[r] + a;
+//    printf("t = base[r=%d] + %c = %d\n", r, key[0], a);
 
 #ifdef DEBUG
     printf("t = base[r=%d] + %c = %d\n", r, key[0], t);
@@ -340,6 +410,8 @@ void darr::DoubleArray<val_t>::insert_str(int h, const std::vector<uint8_t>& key
 #endif
 
     int t = base[h] + e1;
+//    printf("t = base[h=%d] + %c = %d + %d = %d\n", h, key[0], base[h], e1, t);
+
 
     int basesize = base.size();
     if (t >= basesize) {
@@ -356,7 +428,7 @@ void darr::DoubleArray<val_t>::insert_str(int h, const std::vector<uint8_t>& key
     int valuesize = value.size();
     if (t >= valuesize) {
         for (int k=valuesize; k <= t; ++k) {
-            value.push_back(int{});
+            value.push_back(val_t{});
         }
     }
 
@@ -403,11 +475,19 @@ int darr::DoubleArray<val_t>::str_tail(int p, const std::vector<uint8_t>& y) {
         tail[p-1+i] = y[i];
     }
 
+//    printf("TAIL\n");
+//    for (int i=0; i < tail.size(); ++i) {
+//        printf("%c, ", tail[i]);
+//    }
+//    printf("\n");
+
     if (p == POS) {
         return s_y;
     } else {
         return 0;
     }
+    
+
 };
 
 template<typename val_t>
@@ -426,8 +506,10 @@ template<typename val_t>
 int darr::DoubleArray<val_t>::mem_cmp(uint8_t* x, uint8_t* y, int len) {
     int k = 0;
     for (int i=0; i < len; ++i) {
+//        printf("compare %c %c\n", x[i], y[i]);
         if (x[i] == y[i]) {
             k += 1;
+//            printf("k+=1=%d\n", k);
         } else {
             break;
         }
@@ -437,12 +519,28 @@ int darr::DoubleArray<val_t>::mem_cmp(uint8_t* x, uint8_t* y, int len) {
         return -1;
     } else {
         return k;
+//        return 0;
     }
 };
 
 
 template<typename val_t>
 void darr::DoubleArray<val_t>::b_insert(int r, const std::vector<uint8_t>& prefix, const std::vector<uint8_t>& a, const std::vector<uint8_t>& b, const val_t& val) {
+
+//    std::string a_;
+//    for (int i=0; i < a.size(); ++i) {
+//        a_ += a[i];
+//    }
+//    std::string b_;
+//    for (int i=0; i < b.size(); ++i) {
+//        b_ += b[i];
+//    }
+//    std::string prefix_;
+//    for (int i=0; i < prefix.size(); ++i) {
+//        prefix_ += prefix[i];
+//    }
+//    printf("%d %d %d\n", prefix.size(), a.size(), b.size());
+//    printf("B_INSERT(%d, %s, %s, %s)\n", r, prefix_.c_str(), a_.c_str(), b_.c_str());
 
 #ifdef DEBUG
     printf("B_INSERT(%d, %s, %s, %s)\n", r, prefix.c_str(), a.c_str(), b.c_str());
@@ -456,7 +554,7 @@ void darr::DoubleArray<val_t>::b_insert(int r, const std::vector<uint8_t>& prefi
 
     for (int i=0; i < prefix.size(); ++i) {
 //        std::string pi = prefix.substr(i, i+1);
-        std::vector<uint8_t> pi = get_subchars(prefix, i, i+1);
+        std::vector<uint8_t> pi = {prefix[i]};
 
 #ifdef DEBUG
         int b = keymap[prefix[i]];
@@ -464,25 +562,70 @@ void darr::DoubleArray<val_t>::b_insert(int r, const std::vector<uint8_t>& prefi
         int b = prefix[i];
 #endif
 
-        base[r] = x_check(pi);
+        int basesize = base.size();
+        if (r >= basesize) {
+            for (int k=basesize; k <= r; ++k) {
+                base.push_back(0);
+            }
+        }
+
+        int t = x_check(pi);
+        base[r] = t;
+//        printf("basesize:%d index:%d\n", base.size(), r);
+//        printf("B_INSERT move: base[%d] + %c = %d + %d\n", r, prefix[i], base[r], b);
+//        printf("base[r=%d]=%d\n", r, t);
+//        printf("VALUE[r=%d]=", r);
+//        std::cout << value[r] << std::endl;
+
+        int checksize = check.size();
+        if (base[r]+b >= checksize) {
+            for (int k=checksize; k <= base[r]+b; ++k) {
+                check.push_back(-1);
+            }
+        }
+        int valuesize = value.size();
+        if (base[r]+b >= valuesize) {
+            for (int k=valuesize; k <= base[r]+b; ++k) {
+                value.push_back(val_t{});
+            }
+        }
+
         check[base[r] + b] = r;
+        value[base[r] + b] = value[r];
+//        printf("check[base[r]+b] = check[%d+%d]=%d\n", base[r], b, check[base[r]+b]);
+//        printf("value[base[r]+b] = value[%d+%d]=", base[r], b);
+//        std::cout << value[base[r]+b] << std::endl;
+//        printf("checksize:%d index:%d\n", check.size(), base[r]+b);
         r = base[r] + b;
+//        printf("r = base[r=%d] + %c = %d + %d = %d\n", r, prefix[i], base[r], b,r);
+    }
+
+    int basesize = base.size();
+    if (r >= basesize) {
+        for (int k=basesize; k <= r; ++k) {
+            base.push_back(0);
+        }
     }
 
     std::vector<uint8_t> list = {a[0], b[0]};
     int q = x_check(list);
     base[r] = q;
+//    printf("baser[r=%d]=%d\n", r, q);
 
 #ifdef DEBUG
     printf("r=%d value[r=%d]=%d\n", r, r, value[r]);
     printf("B_INSERT1 INS_STR(%d, %s, %d)\n", r, b.c_str(), old_pos);
 #endif
+//    printf("B_INSERT1 INS_STR(%d, %s, %d)\n", r, b_.c_str(), old_pos);
+//    std::cout << "value:" << value[r] << std::endl;
     insert_str(r, b, old_pos, value[r]);
 
 #ifdef DEBUG
     printf("r=%d value[r=%d]=%d\n", r, r, value[r]);
     printf("B_INSERT2 INS_STR(%d, %s, %d)\n", r, a.c_str(), POS);
 #endif
+//    printf("B_INSERT2 INS_STR(%d, %s, %d)\n", r, a_.c_str(), POS);
+//    std::cout << "value:" << val << std::endl;
     insert_str(r, a, POS, val);
 };
 
