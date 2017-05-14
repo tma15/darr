@@ -51,6 +51,7 @@ int main(int argc, char const* argv[]) {
 ## Benchmark
 ```sh
 wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-all-titles-in-ns0.gz
+gunzip enwiki-latest-all-titles-in-ns0.gz
 time ./example/test_darr ./enwiki-latest-all-titles-in-ns0 > res-wiki.txt
 ```
 
