@@ -6,22 +6,73 @@
 
 #include <darr/da.hpp>
 
-void save_array(darr::DoubleArray<float>& da, std::vector<std::string>& keys, std::vector<float>& values) {
-    clock_t start_all = clock();
-    int n_key = keys.size();
-    for (int i=0; i < keys.size(); ++i) {
-        da.insert(keys[i], values[i]);
-        clock_t end = clock();
-        std::cout << "["<<i+1<<"/"<<n_key<<"] ";
-        std::cout << "insert key:" << keys[i] << " value:" << values[i] << " ";
-        std::cout << "time = " << (double)(end - start_all) / CLOCKS_PER_SEC << "sec.\n";
+void save_array(darr::DoubleArray<float>& da,
+        std::string filename) {
 
-//        float got = da.get(keys[i]);
-//        std::cout << "got:" << got << std::endl;
+    std::ifstream ifs(filename.c_str());
+    if (ifs.fail()) {
+        std::cerr << "failed to open:" << filename << std::endl;
+    }
+
+    std::string line;
+    clock_t start_all = clock();
+//    int n_key = keys.size();
+    float v = 1.;
+    while (getline(ifs, line)) {
+//        float v = i;
+//    for (int i=0; i < keys.size(); ++i) {
+        da.insert(line, v);
+        clock_t end = clock();
+        int i = v;
+        std::cout << "["<<i<<"] ";
+        std::cout << "insert key:" << line << " value:" << v << " ";
+        std::cout << "time = " << (double)(end - start_all) / CLOCKS_PER_SEC << "sec.\n";
+        v += 1.;
+
     }
     clock_t end_all = clock();
     std::cout << "insertion " << (double)(end_all - start_all) / CLOCKS_PER_SEC << "sec.\n";
     da.save("da_file");
+};
+
+void check(darr::DoubleArray<float>& da,
+        std::string filename) {
+
+    int n_all = 0;
+    int n_match = 0;
+    float expect = 1.;
+    std::ifstream ifs1(filename.c_str());
+    if (ifs1.fail()) {
+        std::cerr << "failed to open:" << filename << std::endl;
+    }
+    std::string line;
+    while (getline(ifs1, line)) {
+
+        float got = da.get(line);
+        std::cout << "key:" << line;
+        std::cout << " value expect:" << expect << " got:" << got<< std::endl;
+        if (expect == got) {
+            n_match += 1;
+        }
+        n_all += 1;
+        expect += 1.;
+    }
+
+    std::ifstream ifs2(filename.c_str());
+    if (ifs2.fail()) {
+        std::cerr << "failed to open:" << filename << std::endl;
+    }
+
+    while (getline(ifs2, line)) {
+        da.del(line);
+        int k = da.has(line);
+        printf("delete key:%s expect:-1 got:%d\n", line.c_str(), k);
+        if (k == -1) {
+            n_match += 1;
+        }
+        n_all += 1;
+    }
+    printf("match %d/%d\n", n_match, n_all);
 };
 
 int main(int argc, char const* argv[]) {
@@ -30,64 +81,14 @@ int main(int argc, char const* argv[]) {
 #endif
 
     std::string filename = std::string(argv[1]);
-    std::ifstream ifs(filename.c_str());
-    if (ifs.fail()) {
-        std::cerr << "failed to open:" << filename << std::endl;
-    }
-
-    int i = 1;
-    std::vector<std::string> keys;
-    std::vector<float> values;
-
-    std::string line;
-    while (getline(ifs, line)) {
-        keys.push_back(line);
-        float v = i * 2.;
-        values.push_back(v);
-        i += 1;
-    }
 
     darr::DoubleArray<float> da = darr::DoubleArray<float>();
-    save_array(da, keys, values);
+    save_array(da, filename);
 
     darr::DoubleArray<float> da2;
     da2.load("da_file");
 
-    int n_all = 0;
-    int n_match = 0;
-    for (int i=0; i < keys.size(); ++i) {
-        float expect = values[i];
-//        printf("[[da.get]]\n");
-//        float got1 = da.get(keys[i]);
-        printf("[[da2.get]]\n");
-        float got = da2.get(keys[i]);
-        std::cout << "key:" << keys[i] << " value expect:" << expect << " got:" << got<< std::endl;
-        if (expect == got) {
-            n_match += 1;
-        }
-        n_all += 1;
-    }
-
-    for (int i=0; i < keys.size(); ++i) {
-        printf("delete key:%s\n", keys[i].c_str());
-        da2.del(keys[i]);
-        int k = da2.has(keys[i]);
-        printf("key:%s expect:-1 got:%d\n\n", keys[i].c_str(), k);
-        if (k == -1) {
-            n_match += 1;
-        }
-        n_all += 1;
-    }
-    printf("match %d/%d\n", n_match, n_all);
-    printf("\n");
-
-//    std::string k1 = "abcd";
-//    int id1 = da2.has(k1);
-//    std::cout << k1 << " expect:-1" << " got:" << id1 << std::endl;
-
-//    std::string k2 = "bed";
-//    int id2 = da2.has(k2);
-//    std::cout << k2 << " expect:-1" << " got:" << id1 << std::endl;
+    check(da2, filename);
     
     return 0;
 }
