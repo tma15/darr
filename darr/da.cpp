@@ -64,8 +64,8 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
 //    std::cout << std::endl;
     int n_char = chars.size();
 //    printf("n_char:%d\n", n_char);
-//    chars.push_back('\0');
-    chars.push_back('#');
+    chars.push_back('\0');
+//    chars.push_back('#');
 
     int r = 0; // current node id
     int h = 0; // current position of the given string
@@ -156,8 +156,8 @@ int darr::DoubleArray<val_t>::del(const std::string& key) {
         chars.push_back(key[i]);
     }
     int n_char = chars.size();
-//    chars.push_back('\0');
-    chars.push_back('#');
+    chars.push_back('\0');
+//    chars.push_back('#');
 
     int r = 0; // current node id
     int h = 0; // current position of the given string
@@ -254,8 +254,8 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
     }
 //    std::cout << std::endl;
     int n_char = chars.size();
-//    chars.push_back('\0');
-    chars.push_back('#');
+    chars.push_back('\0');
+//    chars.push_back('#');
 
     int r = 0; // current node id
     int h = 0; // current position of the given string
@@ -581,8 +581,8 @@ std::vector<uint8_t> darr::DoubleArray<val_t>::fetch_str(int p) {
     int tailsize = tail.size();
     for (int i=p-1; i < tailsize; ++i) {
         y.push_back(tail[i]);
-//        if (tail[i] == '\0') {
-        if (tail[i] == '#') {
+        if (tail[i] == '\0') {
+//        if (tail[i] == '#') {
             break;
         }
     }
