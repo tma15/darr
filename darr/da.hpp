@@ -8,6 +8,8 @@
 
 namespace darr {
 
+void print_vec(const std::vector<int>& v);
+
 std::vector<uint8_t> _or(const std::vector<uint8_t>& x, const std::vector<uint8_t>& y);
 
 std::vector<uint8_t> get_subchars(const std::vector<uint8_t>& chars, int start, int end); 
@@ -39,8 +41,10 @@ class DoubleArray {
         int x_check(const std::vector<uint8_t>& list);
 
         std::vector<uint8_t> set_list(int k);
+//        std::vector<int> set_list(int k);
 
         int modify(int current_s, int h, const std::vector<uint8_t>& add, const std::vector<uint8_t>& org);
+//        int modify(int current_s, int h, const std::vector<int>& add, const std::vector<int>& org);
 
     public:
 
