@@ -16,17 +16,17 @@ void save_array(darr::DoubleArray<float>& da,
 
     std::string line;
     clock_t start_all = clock();
-//    int n_key = keys.size();
     float v = 1.;
     while (getline(ifs, line)) {
-//        float v = i;
-//    for (int i=0; i < keys.size(); ++i) {
         da.insert(line, v);
         clock_t end = clock();
         int i = v;
         std::cout << "["<<i<<"] ";
         std::cout << "insert key:" << line << " value:" << v << " ";
         std::cout << "time = " << (double)(end - start_all) / CLOCKS_PER_SEC << "sec.\n";
+
+//        int k = da.has(line);
+//        printf("has:%d\n", k);
         v += 1.;
 
     }
@@ -45,6 +45,8 @@ void check(darr::DoubleArray<float>& da,
     if (ifs1.fail()) {
         std::cerr << "failed to open:" << filename << std::endl;
     }
+
+    clock_t start_all = clock();
     std::string line;
     while (getline(ifs1, line)) {
 
@@ -53,10 +55,14 @@ void check(darr::DoubleArray<float>& da,
         std::cout << " value expect:" << expect << " got:" << got<< std::endl;
         if (expect == got) {
             n_match += 1;
+//        } else {
+//            exit(1);
         }
         n_all += 1;
         expect += 1.;
     }
+    clock_t end_all = clock();
+    std::cout << "search " << (double)(end_all - start_all) / CLOCKS_PER_SEC << "sec.\n";
 
     std::ifstream ifs2(filename.c_str());
     if (ifs2.fail()) {
