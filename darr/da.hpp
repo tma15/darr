@@ -32,12 +32,7 @@ template <typename val_t>
 class DoubleArray {
     private:
         int POS;
-//        std::vector<val_t> value;
-//        std::vector<int> base;
-//        std::vector<int> check;
-
         std::vector< node_t<val_t> > node;
-
         std::vector<uint8_t> tail;
 
         void a_insert(int r, const std::vector<uint8_t>& a, const val_t& val);
@@ -63,12 +58,7 @@ class DoubleArray {
 
         DoubleArray() {
             POS = 1;
-//            base.push_back(0);
-//            check.push_back(1);
-//            value.push_back(val_t{});
-
             node.push_back(node_t<val_t>{});
-
         }
 
         bool insert(const std::string& key, const val_t& val);
