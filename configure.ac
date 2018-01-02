@@ -20,6 +20,15 @@ AC_CHECK_HEADERS([stdlib.h string.h])
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 
+DARR_DESCRIPTION='A Double Array implementation'
+AC_SUBST(DARR_DESCRIPTION)
+AC_ARG_WITH([pkgconfigdir],
+	      [AS_HELP_STRING([--with-pkgconfigdir=DIR], [pkgconfig files])],
+	        [pkgconfigdir=$withval],
+		  [pkgconfigdir="${libdir}/pkgconfig"])
+AC_SUBST([pkgconfigdir], [$pkgconfigdir])
+AC_MSG_NOTICE([pkgconfig directory is ${pkgconfigdir}])
+
 # Checks for library functions.
 AC_CHECK_FUNCS([mblen setlocale])
 
@@ -37,5 +46,6 @@ AC_CONFIG_FILES([
 		 Makefile
 		 darr/Makefile
 		 example/Makefile
+		 libdarr.pc
 		 ])
 AC_OUTPUT
