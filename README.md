@@ -2,14 +2,30 @@
 A double array implementation
 
 ## Install
-```
+```sh
 autoreconf -iv
 ./configure --prefix=/path/to/install
 make
 make install
 ```
 
+You need set environmental variables when you specified the custom prefix:
+
+```sh
+export LD_LIBRARY_PATH=/path/to/install/lib:$LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=/path/to/install/lib/pkgconfig:$PKG_CONFIG_PATH
+```
+
+For installing python wrapper, you need install `cython`.
+
+```sh
+cd darr/python
+python setup.py install
+```
+
+
 ## Example
+### C++
 ```c++
 #include <string>
 #include <vector>
@@ -48,7 +64,37 @@ int main(int argc, char const* argv[]) {
 }
 ```
 
+### Python
+
+```python
+# -*- coding: utf-8 -*-
+import darr
+
+da = darr.DoubleArray()
+
+words = ['アップル', 'オレンジ', 'baseball', 'soccer']
+
+v = 0
+for word in words:
+    v += 1.
+    da.insert(word, v)
+
+for word in words:
+    v = da.get(word)
+    print(word, v)
+da.save('dafile')
+
+da2 = darr.DoubleArray()
+da2.load('dafile')
+
+for word in words:
+    v = da2.get(word)
+    print(word, v)
+```
+
+
 ## Benchmark
+
 ```sh
 wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-all-titles-in-ns0.gz
 gunzip enwiki-latest-all-titles-in-ns0.gz
