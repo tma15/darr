@@ -24,11 +24,7 @@ void save_array(darr::DoubleArray<float>& da,
         std::cout << "["<<i<<"] ";
         std::cout << "insert key:" << line << " value:" << v << " ";
         std::cout << "time = " << (double)(end - start_all) / CLOCKS_PER_SEC << "sec.\n";
-
-//        int k = da.has(line);
-//        printf("has:%d\n", k);
         v += 1.;
-
     }
     clock_t end_all = clock();
     std::cout << "insertion " << (double)(end_all - start_all) / CLOCKS_PER_SEC << "sec.\n";
