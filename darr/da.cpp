@@ -185,9 +185,7 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
     int h = 0; // current position of the given string
 
     while (1) {
-
         int a = chars[h];
-
         int t = node[r].base + a;
 
         int nodesize = node.size();
@@ -200,7 +198,6 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
 
         if (node[t].check != r || t > node.size()) {
             std::vector<uint8_t> sub_key = get_subchars(chars, h, n_char+1);
-
             int nodesize1 = node.size();
             if (r > nodesize) {
                 for (int k=nodesize-1; k<=r; ++k) {
@@ -209,7 +206,6 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
             }
 
             a_insert(r, sub_key, val);
-
             return false;
         } else {
             int nodesize1 = node.size();
@@ -218,35 +214,19 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
                     node.push_back(darr::node_t<val_t>{});
                 }
             }
-
             r = t;
         }
         if (node[r].base < 0) {
             break;
         }
-
         h += 1;
     }
 
     if (h == n_char+1) {
         return true;
     } else {
-
         std::vector<uint8_t> s_temp = fetch_str(-node[r].base);
-//        printf("h:%d \n", h+1);
-
         std::vector<uint8_t> remain = get_subchars(chars, h+1, n_char+1);
-
-//        std::string remains;
-//        for (int i=0; i < remain.size(); ++i) {
-//            remains += remain[i];
-//        }
-//        std::cout << "remain:" << remains << std::endl;
-//        std::string stemps;
-//        for (int i=0; i < s_temp.size(); ++i) {
-//            stemps += s_temp[i];
-//        }
-//        std::cout << "s_temp:" << stemps << std::endl;
 
         uint8_t* remain_ = remain.data();
         uint8_t* s_temp_ = s_temp.data();
@@ -254,24 +234,13 @@ bool darr::DoubleArray<val_t>::insert(const std::string& key, const val_t& val) 
         if (prefix_len==-1) {
             return true;
         } else {
-
             std::vector<uint8_t> prefix = get_subchars(chars, h+1, h+1+prefix_len);
             std::vector<uint8_t> remain_key = get_subchars(chars, h+1+prefix_len, n_char+1);
             std::vector<uint8_t> remain_s_temp = get_subchars(s_temp, prefix_len, s_temp.size());
-
-//            std::string prefixs;
-//            for (int i=0; i < prefix.size(); ++i) {
-//                prefixs += prefix[i];
-//            }
-//            std::cout << "prefix:" << prefixs << std::endl;
-
-//            printf("B_INSERT\n");
             b_insert(r, prefix, remain_key, remain_s_temp, val);
-
             return false;
         }
     }
-
 };
 
 template<typename val_t>
