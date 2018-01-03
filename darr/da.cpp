@@ -53,7 +53,6 @@ std::vector<uint8_t> darr::get_subchars(const std::vector<uint8_t>& chars, int s
 
 template<typename val_t>
 int darr::DoubleArray<val_t>::has(const std::string& key) {
-
     int keysize = key.size();
     std::vector<uint8_t> chars(keysize);
     for (int i=0; i < keysize; ++i) {
@@ -61,7 +60,6 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
     }
     int n_char = chars.size();
     chars.push_back('\0');
-//    chars.push_back('#');
 
     int r = 0; // current node id
     int h = 0; // current position of the given string
@@ -71,53 +69,31 @@ int darr::DoubleArray<val_t>::has(const std::string& key) {
         if (node[r].base < 0) {
             break;
         }
-
         int a = chars[h];
-
         t = node[r].base + a;
-//        printf("t=node[r].base+c=%d\n", t);
-//        printf("has move base[%d] + %c = %d + %d = %d, base[t=%d] = %d nodesize:%d\n", r, chars[h], node[r].base, a, t, t, node[t].base, node.size());
-//#else
-
         if (node[t].check != r || t >= node.size()) {
             return -1;
         } else {
             r = t;
         }
-
         h += 1;
     }
 
     if (h == n_char+1) {
-//        printf("has1\n");
         return t;
     } else {
         std::vector<uint8_t> s_temp = fetch_str(-node[r].base);
         std::vector<uint8_t> remain = get_subchars(chars, h, n_char+1);
-
-//        std::string remains;
-//        for (int i=0; i < remain.size(); ++i) {
-//            remains += remain[i];
-//        }
-//        std::cout << "remain:" << remains << std::endl;
-//        std::string stemps;
-//        for (int i=0; i < s_temp.size(); ++i) {
-//            stemps += s_temp[i];
-//        }
-//        std::cout << "s_temp:" << stemps << std::endl;
 
         uint8_t* remain_ = remain.data();
         uint8_t* s_temp_ = s_temp.data();
         int match = mem_cmp(s_temp_, remain_, remain.size());
 
         if (match == -1) {
-//            printf("has2\n");
             return t;
         } else {
-//            printf("!has2 t=%d\n", t);
             return -1;
         }
-
     }
 };
 
@@ -189,7 +165,7 @@ val_t darr::DoubleArray<val_t>::get(const std::string& key) {
         return val;
     } else {
         std::cerr << "Key Error: " << key << std::endl;
-        return -1;
+//        return -1;
     }
 };
 
@@ -655,8 +631,23 @@ void darr::DoubleArray<val_t>::load(const char* filename) {
     fclose(fp);
 };
 
+template<typename val_t> 
+std::vector<std::string>
+darr::DoubleArray<val_t>::common_prefix_search(const std::string& key) {
+    int keysize = len_utf8(key.c_str());
+    const char* _key = key.c_str();
+    std::vector<std::string> common_prefix;
+    for (int i=0; i < keysize; ++i) {
+        char* s = substr_utf8(_key, 0, i+1);
+        if (has(s) != -1) {
+            common_prefix.push_back(s);
+        }
+    }
+    return common_prefix;
+}
 
 
 template class darr::DoubleArray<int>;
 template class darr::DoubleArray<float>;
 template class darr::DoubleArray<double>;
+template class darr::DoubleArray<std::string>;
