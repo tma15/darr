@@ -73,7 +73,58 @@ class DoubleArray {
 
         void load(const char* filename);
 
+        std::vector<std::string> common_prefix_search(const std::string& key);
 };
+
+int count_byte_of_utf8(unsigned char ch) {
+    int byte;
+    if ((ch >= 0x00) && (ch <= 0x7f)) {
+        byte = 1;
+    } else if ((ch >= 0xc2) && (ch <= 0xdf)) {
+        byte = 2;
+    } else if ((ch >= 0xe0) && (ch <= 0xef)) {
+        byte = 3;
+    } else if ((ch >= 0xf0) && (ch <= 0xf7)) {
+        byte = 4;
+    } else if ((ch >= 0xf8) && (ch <= 0xfb)) {
+        byte = 5;
+    } else if ((ch >= 0xfc) && (ch <= 0xfd)) {
+        byte = 6;
+    } else {
+        byte = 0;
+    }
+    return byte;
+}
+
+char* substr_utf8(const char* str, int start, int len) {
+    static char substr[1024];
+    char* pRes = substr;
+    int i = 0, pos = 0;
+    int byte;
+
+    while (str[i] != '\0') {
+        byte = count_byte_of_utf8(str[i]);
+        if (start <= pos && pos < start + len) {
+            memcpy(pRes, (str + i), byte);
+            pRes += byte;
+        }
+        i += byte;
+        pos++;
+    }
+    *pRes = '\0';
+    return substr;
+}
+
+int len_utf8(const char* str) {
+    int i = 0, pos = 0;
+    int byte;
+    while (str[i] != '\0') {
+        byte = count_byte_of_utf8(str[i]);
+        i += byte;
+        pos += 1;
+    }
+    return pos;
+}
 
 } // namespace darr
 
