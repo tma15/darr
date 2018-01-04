@@ -29,6 +29,13 @@ AC_ARG_WITH([pkgconfigdir],
 AC_SUBST([pkgconfigdir], [$pkgconfigdir])
 AC_MSG_NOTICE([pkgconfig directory is ${pkgconfigdir}])
 
+AC_ARG_WITH([gperf],
+	      [AS_HELP_STRING([--with-gperf=DIR], [gperf install prefix])],
+		[DARR_GPERF_INSTALL_PREFIX=$withval],
+		  [DARR_GPERF_INSTALL_PREFIX="${libdir}"])
+AC_MSG_NOTICE([!!! gperf directory is ${DARR_GPERF_INSTALL_PREFIX}])
+AC_SUBST(DARR_GPERF_INSTALL_PREFIX)
+
 # Checks for library functions.
 AC_CHECK_FUNCS([mblen setlocale])
 
