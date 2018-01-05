@@ -452,11 +452,12 @@ int darr::DoubleArray<val_t>::x_check(const std::vector<uint8_t>& list) {
         bool ok = true;
         for (int i=0; i < listsize; ++i) {
             int c = list[i];
+            int offset = q + c;
 
-            if (q + c >= nodesize) {
+            if (offset >= nodesize) {
                 continue;
             }
-            if (node[q + c].check > -1) {
+            if (node[offset].check > -1) {
                 ok = false;
                 break;
             }
